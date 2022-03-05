@@ -12,8 +12,7 @@ class TodoApp extends StatefulWidget {
 }
 
 class _TodoAppState extends State<TodoApp> {
-  List<Task> tasks = [
-  ];
+  List<Task> tasks = [];
   var scaffoldKey = GlobalKey<ScaffoldState>();
   var formKey = GlobalKey<FormState>();
   bool isBottomSheetShown = false;
@@ -26,107 +25,116 @@ class _TodoAppState extends State<TodoApp> {
     tasks.add(newTask);
   }
 
+  Future<void> getTasksList()async{
+
+   final firestoreTasks= await FirebaseFirestore.instance.collection('Task').get();
+   tasks.clear();
+   firestoreTasks.docs.forEach((element) {
+     tasks.add(Task(title: element.get('title'), time: element.get('time'), date: element.get('date'), docName: element.get('docName'),isChecked: element.get('isChecked')));
+   });
+   setState(() {
+
+   });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(),
-      body: ListView.separated(
-          itemBuilder: (context, index) => Container(
-                color: tasks[index].isChecked ? Colors.black12 : Colors.white,
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 35.0,
-                      child: Text(
-                        '${tasks[index].time}',
-                      ),
-                    ),
-                    SizedBox(
-                      width: 25.0,
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${tasks[index].title}',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              decoration: tasks[index].isChecked
-                                  ? TextDecoration.lineThrough
-                                  : null),
+      body: FutureBuilder(future:getTasksList(),builder: (context, snapshot) {
+
+        return ListView.separated(
+            itemBuilder: (context, index) => Container(
+                  color: tasks[index].isChecked ? Colors.black12 : Colors.white,
+                  padding: const EdgeInsets.all(20.0),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 35.0,
+                        child: Text(
+                          '${tasks[index].time}',
                         ),
-                        Text(
-                          '${tasks[index].date}',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 18,
+                      ),
+                      SizedBox(
+                        width: 25.0,
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${tasks[index].title}',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                decoration: tasks[index].isChecked
+                                    ? TextDecoration.lineThrough
+                                    : null),
                           ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    IconButton(
-                      onPressed: ()async {
-
-                       await FirebaseFirestore.instance
-                            .collection('Task')
-                            .doc(tasks[index].docName).delete();
-                       tasks.removeAt(index);
-                       setState(() {
-
-                       });
-                      },
-                      icon: Icon(
-                        Icons.delete,
-                        color: Colors.teal,
+                          Text(
+                            '${tasks[index].date}',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Checkbox(
-                        value: tasks[index].isChecked,
-                        onChanged: (bool? value)async {
+                      Expanded(
+                        child: Container(),
+                      ),
+                      IconButton(
+                        onPressed: () async {
                           await FirebaseFirestore.instance
                               .collection('Task')
                               .doc(tasks[index].docName)
-                              .set({
-                            'title':tasks[index].title,
-                            'time':tasks[index].time,
-                            'date':tasks[index].date,
-                            'docName': tasks[index].docName,
-                            'isChecked': value,
-                          });
-                          setState(() {
-                            tasks[index].isChecked = value ?? false;
-                          });
-
-                        }),
-                  ],
+                              .delete();
+                          tasks.removeAt(index);
+                          setState(() {});
+                        },
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.teal,
+                        ),
+                      ),
+                      Checkbox(
+                          value: tasks[index].isChecked,
+                          onChanged: (bool? value) async {
+                            await FirebaseFirestore.instance
+                                .collection('Task')
+                                .doc(tasks[index].docName)
+                                .set({
+                              'title': tasks[index].title,
+                              'time': tasks[index].time,
+                              'date': tasks[index].date,
+                              'docName': tasks[index].docName,
+                              'isChecked': value,
+                            });
+                            setState(() {
+                              tasks[index].isChecked = value ?? false;
+                            });
+                          }),
+                    ],
+                  ),
                 ),
-              ),
-          separatorBuilder: (context, index) => Container(
-                width: double.infinity,
-                height: 1.0,
-                color: Colors.grey,
-              ),
-          itemCount: tasks.length),
+            separatorBuilder: (context, index) => Container(
+                  width: double.infinity,
+                  height: 1.0,
+                  color: Colors.grey,
+                ),
+            itemCount: tasks.length);
+      }),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           if (isBottomSheetShown) {
-            if(formKey.currentState!.validate()) {
+            if (formKey.currentState!.validate()) {
               var task = Task(
                 title: titleController.text,
                 isChecked: false,
                 time: timeController.text,
                 date: dateController.text,
-                docName: DateTime
-                    .now()
-                    .millisecondsSinceEpoch
-                    .toString(),
+                docName: DateTime.now().millisecondsSinceEpoch.toString(),
               );
               await FirebaseFirestore.instance
                   .collection('Task')
@@ -148,9 +156,9 @@ class _TodoAppState extends State<TodoApp> {
 
               Navigator.pop(context);
               isBottomSheetShown = false;
-            } } else {
-          scaffoldKey.currentState!.showBottomSheet(
-
+            }
+          } else {
+            scaffoldKey.currentState!.showBottomSheet(
               (context) => Container(
                 color: Colors.grey[200],
                 padding: EdgeInsets.all(20),

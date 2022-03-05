@@ -5,6 +5,8 @@ import 'LoginScreen.dart';
 import 'TodoApp.dart';
 
 void main()async {
+
+
   WidgetsFlutterBinding.ensureInitialized();
  await Firebase.initializeApp();
   runApp(MyApp());
