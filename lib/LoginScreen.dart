@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'SignupScreen.dart';
+import 'TodoApp.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -20,7 +22,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Form(key: formKey,
+      body: Form(
+        key: formKey,
         child: SafeArea(
           child: SingleChildScrollView(
             child: Container(
@@ -81,7 +84,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         suffixIcon: IconButton(
                           icon: Icon(
                             // Based on passwordVisible state choose the icon
-                            passwordVisibility ? Icons.visibility : Icons.visibility_off,
+                            passwordVisibility
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                             color: Theme.of(context).primaryColorDark,
                           ),
                           onPressed: () {
@@ -102,13 +107,26 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 50.0,
                       child: MaterialButton(
                         onPressed: () async {
-                          final message = await LoginScreen();
                           if (formKey.currentState!.validate()) {
-                            if (message != 'Ok') {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(content: Text('message')));
-                            } else {
-                              return null;
+                            try {
+                              await FirebaseAuth.instance
+                                  .signInWithEmailAndPassword(
+                                      email: emailController.text.trim(),
+                                      password: passwordController.text.trim());
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TodoApp(),
+                                ),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content:
+                                          Text("Welcome to ToDo App 😊 ")));
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(e.toString())));
+                              print(e.toString());
                             }
                           }
                         },

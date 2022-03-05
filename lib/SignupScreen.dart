@@ -1,5 +1,10 @@
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'TodoApp.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -18,17 +23,28 @@ class _SignupScreenState extends State<SignupScreen> {
   // String? userUid;
   // late final userEmail;
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   // TODO: implement dispose
+  //   super.dispose();
+  //   emailController.dispose();
+  //   passwordController.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(
+              Icons.arrow_back_ios_rounded,
+              color: Colors.teal,
+            )),
+      ),
       body: Form(
         key: formKey,
         child: SafeArea(
@@ -137,17 +153,33 @@ class _SignupScreenState extends State<SignupScreen> {
                       height: 50.0,
                       child: MaterialButton(
                         onPressed: () async {
-
-                          final message = await Signup();
                           if (formKey.currentState!.validate()) {
-                            if (message != 'Ok') {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(message),
+                            try {
+                              await FirebaseAuth.instance
+                                  .createUserWithEmailAndPassword(
+                                      email: emailController.text.trim(),
+                                      password: passwordController.text.trim());
+// FirebaseAuth.instance.signInWithEmailAndPassword(email: , password: password)
+                             await FirebaseFirestore.instance.collection("users").doc(emailController.text.trim()).set({
+                                'name':nameController.text.trim(),
+                                'email':emailController.text.trim(),
+                                'password':passwordController.text.trim(),
+                                'phone':phoneController.text.trim(),
+                              });
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TodoApp(),
                                 ),
                               );
-                            } else {
-                              return null;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content:
+                                          Text("Signed up successfully!")));
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(e.toString())));
+                              print(e.toString());
                             }
                           }
                         },
@@ -170,4 +202,6 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
+
+  signup(String email, String password) {}
 }
