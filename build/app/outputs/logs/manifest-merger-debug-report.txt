@@ -105,7 +105,7 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\3B
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.6.0] C:\Users\3BS\.gradle\caches\transforms-3\9afc84f93293d0d028fa4b468ffdb04e\transformed\core-1.6.0\AndroidManifest.xml:24:18-86
 	android:label
-		ADDED from C:\Users\3BS\StudioProjects\LoginSignup\android\app\src\main\AndroidManifest.xml:4:9-36
+		ADDED from C:\Users\3BS\StudioProjects\LoginSignup\android\app\src\main\AndroidManifest.xml:4:9-30
 	android:icon
 		ADDED from C:\Users\3BS\StudioProjects\LoginSignup\android\app\src\main\AndroidManifest.xml:5:9-43
 activity#com.example.loginsignup.MainActivity

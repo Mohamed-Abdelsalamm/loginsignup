@@ -25,8 +25,8 @@
 19        android:debuggable="true"
 20        android:icon="@mipmap/ic_launcher"
 20-->C:\Users\3BS\StudioProjects\LoginSignup\android\app\src\main\AndroidManifest.xml:5:9-43
-21        android:label="loginsignup" >
-21-->C:\Users\3BS\StudioProjects\LoginSignup\android\app\src\main\AndroidManifest.xml:4:9-36
+21        android:label="To Do" >
+21-->C:\Users\3BS\StudioProjects\LoginSignup\android\app\src\main\AndroidManifest.xml:4:9-30
 22        <activity
 22-->C:\Users\3BS\StudioProjects\LoginSignup\android\app\src\main\AndroidManifest.xml:6:9-35:20
 23            android:name="com.example.loginsignup.MainActivity"
